@@ -1,0 +1,50 @@
+#include <Servo.h>
+
+Servo servo1;
+Servo servo2;
+Servo servo3;
+
+const int servo1Pin = 13;
+const int servo2Pin = 12;
+const int servo3Pin = 11;
+
+const int joystick1Pin = A5;
+const int joystick2Pin = A3;
+const int joystick3Pin = A1;
+
+const int deadzone = 50;  // joystick deadzone around center
+
+// Store last servo angles to hold position when joystick is centered
+int servo1Angle = 90;
+int servo2Angle = 90;
+int servo3Angle = 90;
+
+void setup() {
+  servo1.attach(servo1Pin);
+  servo2.attach(servo2Pin);
+  servo3.attach(servo3Pin);
+
+  // Initialize servos at center position
+  servo1.write(servo1Angle);
+  servo2.write(servo2Angle);
+  servo3.write(servo3Angle);
+}
+
+void loop() {
+  updateServoWithJoystick(joystick1Pin, servo1, servo1Angle);
+  updateServoWithJoystick(joystick2Pin, servo2, servo2Angle);
+  updateServoWithJoystick(joystick3Pin, servo3, servo3Angle);
+
+  delay(20);
+}
+
+void updateServoWithJoystick(int joystickPin, Servo &servo, int &lastAngle) {
+  int joyVal = analogRead(joystickPin);
+
+  if (abs(joyVal - 512) > deadzone) {
+    // Map joystick 0–1023 to 0–180 degrees
+    lastAngle = map(joyVal, 0, 1023, 0, 180);
+    servo.write(lastAngle);
+  }
+  // else joystick centered: do NOT change lastAngle or servo position → hold position
+}
