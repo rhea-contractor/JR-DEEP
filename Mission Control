@@ -1,0 +1,102 @@
+import random
+import time
+import os
+
+# Initialize system statuses
+systems = {
+    "Power Level": 100,          # percent
+    "Fuel Level": 100,           # percent
+    "Comm Signal": 100,          # percent
+}
+
+# Safe operating ranges
+safe_ranges = {
+    "Power Level": (50, 100),
+    "Fuel Level": (25, 100),
+    "Comm Signal": (70, 100),
+}
+
+def update_systems():
+    # Randomly change system values to simulate real-time sensor data
+    systems["Power Level"] = max(0, min(100, systems["Power Level"] + random.randint(-5, 3)))
+    systems["Fuel Level"] = max(0, min(100, systems["Fuel Level"] + random.randint(-4, 2)))
+    systems["Comm Signal"] = max(0, min(100, systems["Comm Signal"] + random.randint(-10, 5)))
+
+def check_systems():
+    alerts = []
+    for system, value in systems.items():
+        if system == "Navigation Status":
+            if value not in safe_ranges[system]:
+                alerts.append(f"ALERT! {system} status is {value}")
+        else:
+            safe_min, safe_max = safe_ranges[system]
+            if not (safe_min <= value <= safe_max):
+                alerts.append(f"ALERT! {system} out of safe range: {value}")
+    return alerts
+
+def display_status():
+    print("\n--- Spacecraft System Status ---")
+    for system, value in systems.items():
+        print(f"{system}: {value}")
+    print("-------------------------------")
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def handle_command(cmd):
+    cmd = cmd.lower().strip()
+    if cmd == "help":
+        print("Available commands:")
+        print("  reset power  - Reset Power Level to 100%")
+        print("  reset fuel   - Reset Fuel Level to 100%")
+        print("  reset comm   - Reset Comm Signal to 100%")
+        print("  check fuel   - Show current Fuel Level")
+        print("  check power  - Show current Power Level")
+        print("  status       - Show all system statuses")
+        print("  quit         - Exit the program")
+    elif cmd == "reset power":
+        systems["Power Level"] = 100
+        print("Power Level reset to 100%")
+    elif cmd == "reset fuel":
+        systems["Fuel Level"] = 100
+        print("Fuel Level reset to 100%")
+    elif cmd == "reset comm":
+        systems["Comm Signal"] = 100
+        print("Comm Signal reset to 100%")
+    elif cmd == "check fuel":
+        print(f"Fuel Level is {systems['Fuel Level']}%")
+    elif cmd == "check power":
+        print(f"Power Level is {systems['Power Level']}%")
+    elif cmd == "status":
+        display_status()
+    elif cmd == "quit":
+        print("Exiting Mission Control Simulator.")
+        return False
+    else:
+        print("Unknown command. Type 'help' for a list of commands.")
+    return True
+
+def main():
+    print("Welcome to the Mission Control Simulator!")
+    print("Type 'help' for a list of commands.\n")
+
+    running = True
+    while running:
+        print("\nEnter command or press Enter to continue monitoring:")
+        user_input = input("> ").strip()
+
+        if user_input == "":
+            # No command, update and display status
+            update_systems()
+            clear_screen()
+            display_status()
+            alerts = check_systems()
+            for alert in alerts:
+                print(alert)
+            time.sleep(1)
+        else:
+            # Process command without refreshing status immediately
+            running = handle_command(user_input)
+
+if __name__ == "__main__":
+    main()
