@@ -1,0 +1,34 @@
+#include <Servo.h>
+
+// Pin definitions
+const int ledPin1 = 6;
+const int ledPin2 = 7;
+const int servoPin = 9;
+
+Servo myServo;
+
+void setup() {
+  // Set up LED pins
+  pinMode(ledPin1, OUTPUT);
+  pinMode(ledPin2, OUTPUT);
+
+  // Attach the servo
+  myServo.attach(servoPin);
+
+  // Turn on LEDs
+  digitalWrite(ledPin1, HIGH);
+  digitalWrite(ledPin2, HIGH);
+
+  // Move the servo back and forth a few times
+  myServo.write(0);
+  delay(1000); // wait 1 second
+  myServo.write(180);
+  delay(1000);
+  myServo.write(0);
+  delay(1000);
+  myServo.write(90); // stay in neutral
+}
+
+void loop() {
+  // Nothing needed in loop unless you want it to keep moving
+}
